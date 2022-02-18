@@ -1,13 +1,13 @@
 use chrono::*;
-use std::io;
+use std::{fs, io};
 
 fn main() {
     // Pointer to functions
-    let funcs = [about, longterm, stable, develop];
+    let funcs = [about, longterm, stable, develop, config];
 
     // Information
     println!("Input Mode:");
-    println!("1.longterm;2.stable;3.develop");
+    println!("1.longterm;2.stable;3.develop;4.set config");
 
     // Input mode selection
     let mut string1 = String::new();
@@ -17,7 +17,8 @@ fn main() {
         && (index_string == "0"
             || index_string == "1"
             || index_string == "2"
-            || index_string == "3")
+            || index_string == "3"
+            || index_string == "4")
     {
         // Get index for mode5
         let index: usize = index_string.parse::<usize>().unwrap();
@@ -90,4 +91,42 @@ fn develop() {
         local.month(),
         local.day()
     );
+}
+
+fn config() {
+    println!("Input Config of XeRelease");
+    // Strings to store version numbers
+    let mut config_longterm = String::new();
+    let mut config_stable = String::new();
+    let mut config_devel = String::new();
+
+    // Input version numbers
+    println!("Input version config of longterm");
+    io::stdin()
+        .read_line(&mut config_longterm)
+        .expect("Read Line Error!");
+    println!("Input version config of stable");
+    io::stdin()
+        .read_line(&mut config_stable)
+        .expect("Read Line Error!");
+    println!("Input version config of development");
+    io::stdin()
+        .read_line(&mut config_devel)
+        .expect("Read Line Error!");
+
+    let contents = "longterm=".to_string()
+        + &config_longterm
+        + "stable="
+        + &config_stable
+        + "development="
+        + &config_devel;
+
+    // Save Configs to file
+    fs::write("config", contents).expect("File Write Error!");
+}
+
+fn get_config() -> String{
+    let str = String::new();
+    
+    return str;
 }
