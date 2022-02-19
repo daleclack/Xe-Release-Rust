@@ -127,6 +127,6 @@ fn config() {
 
 fn get_config() -> String{
     let str = String::new();
-    
+
     return str;
 }
