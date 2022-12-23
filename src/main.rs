@@ -1,9 +1,18 @@
 use chrono::*;
-use std::{fs, io};
+use std::{fs, io, process::exit};
 
 fn main() {
     // Pointer to functions
     let funcs = [about, longterm, stable, develop, config];
+
+    // Read config file
+    let configs = get_config();
+
+    if configs == "-1"{
+        println!("Config File Invaild!");
+        config();
+        exit(0);
+    }
 
     // Information
     println!("Input Mode:");
@@ -20,7 +29,7 @@ fn main() {
             || index_string == "3"
             || index_string == "4")
     {
-        // Get index for mode5
+        // Get index for modes
         let index: usize = index_string.parse::<usize>().unwrap();
         funcs[index]();
     } else {
@@ -101,15 +110,15 @@ fn config() {
     let mut config_devel = String::new();
 
     // Input version numbers
-    println!("Input version config of longterm");
+    println!("Input version config of longterm:");
     io::stdin()
         .read_line(&mut config_longterm)
         .expect("Read Line Error!");
-    println!("Input version config of stable");
+    println!("Input version config of stable:");
     io::stdin()
         .read_line(&mut config_stable)
         .expect("Read Line Error!");
-    println!("Input version config of development");
+    println!("Input version config of development:");
     io::stdin()
         .read_line(&mut config_devel)
         .expect("Read Line Error!");
@@ -122,11 +131,16 @@ fn config() {
         + &config_devel;
 
     // Save Configs to file
-    fs::write("config", contents).expect("File Write Error!");
+    fs::write("xe_config", contents).expect("File Write Error!");
 }
 
 fn get_config() -> String{
-    let str = String::new();
+    // Read configs from config file
+    let filename = String::from("xe_config");
+    let config = match fs::read_to_string(filename){
+        Ok(config) => config,
+        Err(_) => String::from("-1"),
+    };
 
-    return str;
+    return config;
 }
