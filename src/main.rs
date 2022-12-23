@@ -3,50 +3,56 @@ use std::{fs, io, process::exit};
 
 fn main() {
     // Pointer to functions
-    let funcs = [about, longterm, stable, develop, config];
+    let funcs = [about, longterm, stable, develop, config, exit_app];
 
     // Read config file
     let configs = get_config();
 
-    if configs == "-1"{
+    if configs == "-1" {
         println!("Config File Invaild!");
         config();
         exit(0);
     }
 
-    // Information
-    println!("Input Mode:");
-    println!("1.longterm;2.stable;3.develop;4.set config");
+    loop {
+        // Information
+        println!("Input Mode:");
+        println!("1.longterm;2.stable;3.develop;4.set config;5.exit");
 
-    // Input mode selection
-    let mut string1 = String::new();
-    io::stdin().read_line(&mut string1).expect("Read Error!");
-    let index_string = string1.trim();
-    if !index_string.is_empty()
-        && (index_string == "0"
-            || index_string == "1"
-            || index_string == "2"
-            || index_string == "3"
-            || index_string == "4")
-    {
-        // Get index for modes
-        let index: usize = index_string.parse::<usize>().unwrap();
-        funcs[index]();
-    } else {
-        println!("Please input a vaild mode index!");
+        // Input mode selection
+        let mut string1 = String::new();
+        io::stdin().read_line(&mut string1).expect("Read Error!");
+        let index_string = string1.trim();
+        if !index_string.is_empty()
+            && (index_string == "0"
+                || index_string == "1"
+                || index_string == "2"
+                || index_string == "3"
+                || index_string == "4"
+                || index_string == "5")
+        {
+            // Get index for modes
+            let index: usize = index_string.parse::<usize>().unwrap();
+            funcs[index]();
+        } else {
+            println!("Please input a vaild mode index!");
+        }
     }
 }
 
 fn about() {
     // Print Help Information
-    println!("XeRelease Rust Edition by daleclack");
+    println!("XeRelease Rust Edition by daleclack\nVersion 2.0");
 }
 
 fn longterm() {
     // Get current time
     let now = Utc::now();
     let local = Local::now();
-    let naive_time = NaiveDate::from_ymd_opt(2019, 1, 11).unwrap().and_hms_opt(0, 0, 0).unwrap();
+    let naive_time = NaiveDate::from_ymd_opt(2019, 1, 11)
+        .unwrap()
+        .and_hms_opt(0, 0, 0)
+        .unwrap();
     let other_dt = DateTime::<Utc>::from_utc(naive_time, Utc);
 
     // Calculate the duration time
@@ -66,7 +72,10 @@ fn stable() {
     // Get current time
     let now = Utc::now();
     let local = Local::now();
-    let naive_time = NaiveDate::from_ymd_opt(2017, 5, 19).unwrap().and_hms_opt(0, 0, 0).unwrap();
+    let naive_time = NaiveDate::from_ymd_opt(2017, 5, 19)
+        .unwrap()
+        .and_hms_opt(0, 0, 0)
+        .unwrap();
     let other_dt = DateTime::<Utc>::from_utc(naive_time, Utc);
 
     // Calculate the duration time
@@ -86,7 +95,10 @@ fn develop() {
     // Get current time
     let now = Utc::now();
     let local = Local::now();
-    let naive_time = NaiveDate::from_ymd_opt(2017, 5, 19).unwrap().and_hms_opt(0, 0, 0).unwrap();
+    let naive_time = NaiveDate::from_ymd_opt(2017, 5, 19)
+        .unwrap()
+        .and_hms_opt(0, 0, 0)
+        .unwrap();
     let other_dt = DateTime::<Utc>::from_utc(naive_time, Utc);
 
     // Calculate the duration time
@@ -100,6 +112,10 @@ fn develop() {
         local.month(),
         local.day()
     );
+}
+
+fn exit_app() {
+    exit(0);
 }
 
 fn config() {
@@ -134,10 +150,10 @@ fn config() {
     fs::write("xe_config", contents).expect("File Write Error!");
 }
 
-fn get_config() -> String{
+fn get_config() -> String {
     // Read configs from config file
     let filename = String::from("xe_config");
-    let config = match fs::read_to_string(filename){
+    let config = match fs::read_to_string(filename) {
         Ok(config) => config,
         Err(_) => String::from("-1"),
     };
