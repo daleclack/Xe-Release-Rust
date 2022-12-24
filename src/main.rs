@@ -1,18 +1,13 @@
 use chrono::*;
-use std::{fs, io, process::exit};
+use std::{
+    fs::{self, File},
+    io::{self, BufRead, BufReader},
+    process::exit,
+};
 
 fn main() {
     // Pointer to functions
     let funcs = [about, longterm, stable, develop, config, exit_app];
-
-    // Read config file
-    let configs = get_config();
-
-    if configs == "-1" {
-        println!("Config File Invaild!");
-        config();
-        exit(0);
-    }
 
     loop {
         // Information
@@ -58,9 +53,14 @@ fn longterm() {
     // Calculate the duration time
     let diff = now.signed_duration_since(other_dt);
 
+    // Get Version Config
+    let mut version = String::new();
+    read_cfg_file("xe_config", "Longterm", &mut version);
+
     // Just print it on terminal
     println!(
-        "5.4.{} {}-{}-{}",
+        "{}.{} {}-{}-{}",
+        version,
         diff.num_days(),
         local.year(),
         local.month(),
@@ -81,9 +81,14 @@ fn stable() {
     // Calculate the duration time
     let diff = now.signed_duration_since(other_dt);
 
+    // Get Version Config
+    let mut version = String::new();
+    read_cfg_file("xe_config", "Stable", &mut version);
+
     // Just print it on terminal
     println!(
-        "7.2.{} {}-{}-{}",
+        "{}.{} {}-{}-{}",
+        version,
         diff.num_days(),
         local.year(),
         local.month(),
@@ -104,9 +109,14 @@ fn develop() {
     // Calculate the duration time
     let diff = now.signed_duration_since(other_dt);
 
+    // Get Version Config
+    let mut version = String::new();
+    read_cfg_file("xe_config", "Develop", &mut version);
+
     // Just print it on terminal
     println!(
-        "8.0.{} {}-{}-{}",
+        "{}.{} {}-{}-{}",
+        version,
         diff.num_days(),
         local.year(),
         local.month(),
@@ -139,24 +149,43 @@ fn config() {
         .read_line(&mut config_devel)
         .expect("Read Line Error!");
 
-    let contents = "longterm=".to_string()
+    let contents = "Longterm=".to_string()
         + &config_longterm
-        + "stable="
+        + "Stable="
         + &config_stable
-        + "development="
+        + "Develop="
         + &config_devel;
 
     // Save Configs to file
     fs::write("xe_config", contents).expect("File Write Error!");
 }
 
-fn get_config() -> String {
-    // Read configs from config file
-    let filename = String::from("xe_config");
-    let config = match fs::read_to_string(filename) {
-        Ok(config) => config,
-        Err(_) => String::from("-1"),
+fn read_cfg_file(filename: &str, key: &str, value: &mut String) {
+    // let mut value = String::new();
+    let key = key.trim();
+    // Open the file
+    // If the file not exist, create it
+    let filename = filename.trim();
+    let file1 = match File::open(filename) {
+        Ok(file1) => file1,
+        Err(_) => File::create(filename).unwrap(),
     };
 
-    return config;
+    // Create a BufReader and read the file line by line
+    let reader = BufReader::new(file1);
+    for (_, line) in reader.lines().enumerate() {
+        let line = line.unwrap();
+        // Check the vaild config line
+        let result = line.find("=");
+        if result != None {
+            // split the content line to key and value
+            let key_value: Vec<&str> = line.split("=").collect();
+            let key1 = key_value[0].clone();
+            if key1 == key {
+                // Push the value
+                value.push_str(key_value[1]);
+                return;
+            }
+        }
+    }
 }
