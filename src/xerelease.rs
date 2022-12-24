@@ -1,6 +1,6 @@
+use crate::cfgfile::read_cfg_file;
 use chrono::*;
 use std::{fs, io};
-use crate::cfgfile::read_cfg_file;
 
 pub fn longterm() {
     // Get current time
