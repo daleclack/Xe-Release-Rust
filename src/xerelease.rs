@@ -1,6 +1,9 @@
 use crate::cfgfile::read_cfg_file;
 use chrono::*;
-use std::{fs, io};
+use std::{
+    fs::{self, File},
+    io::{self, Write},
+};
 
 pub fn longterm() {
     // Get current time
@@ -28,6 +31,17 @@ pub fn longterm() {
         local.month(),
         local.day()
     );
+
+    // Save version file
+    let patch_ver = diff.num_days().to_string()
+        + " "
+        + &local.year().to_string()
+        + "-"
+        + &local.month().to_string()
+        + "-"
+        + &local.day().to_string()
+        + "\n";
+    save_release(version, patch_ver);
 }
 
 pub fn stable() {
@@ -56,6 +70,17 @@ pub fn stable() {
         local.month(),
         local.day()
     );
+
+    // Save version file
+    let patch_ver = diff.num_days().to_string()
+        + " "
+        + &local.year().to_string()
+        + "-"
+        + &local.month().to_string()
+        + "-"
+        + &local.day().to_string()
+        + "\n";
+    save_release(version, patch_ver);
 }
 
 pub fn develop() {
@@ -84,6 +109,17 @@ pub fn develop() {
         local.month(),
         local.day()
     );
+
+    // Save version file
+    let patch_ver = diff.num_days().to_string()
+        + " "
+        + &local.year().to_string()
+        + "-"
+        + &local.month().to_string()
+        + "-"
+        + &local.day().to_string()
+        + "\n";
+    save_release(version, patch_ver);
 }
 
 pub fn config() {
@@ -116,4 +152,30 @@ pub fn config() {
 
     // Save Configs to file
     fs::write("xe_config", contents).expect("File Write Error!");
+}
+
+fn save_release(ver: String, patch: String) {
+    // Get the file name to open
+    let ver_str = &ver[0..1];
+    println!("{}", ver_str);
+    let save_file_name = "xe-".to_string() + ver_str + ".x";
+    println!("{}", save_file_name);
+    let filename1 = save_file_name.clone();
+
+    // Open the file to save
+    let mut file = match fs::OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(save_file_name)
+    {
+        Ok(file) => file,
+        Err(_) => File::create(filename1).unwrap(),
+    };
+
+    // Save the content
+    let full_version = ver + "." + &patch;
+    match file.write_all(full_version.as_bytes()) {
+        Ok(_) => println!("Release file saved!"),
+        Err(_) => println!("Release file save failed!"),
+    }
 }

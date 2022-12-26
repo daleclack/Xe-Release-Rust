@@ -40,7 +40,7 @@ fn main() {
 
 fn about() {
     // Print Help Information
-    println!("XeRelease Rust Edition by daleclack\nVersion 2.0");
+    println!("XeRelease Rust Edition by daleclack\nVersion 3.0");
 }
 
 fn exit_app() {
