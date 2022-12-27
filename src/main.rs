@@ -1,6 +1,7 @@
 // Import mods
 mod xerelease;
 mod cfgfile;
+mod xeapi;
 
 use std::{
     io,

@@ -1,4 +1,5 @@
 use crate::cfgfile::read_cfg_file;
+use crate::xeapi::get_build_ver;
 use chrono::*;
 use std::{
     fs::{self, File},
@@ -22,14 +23,18 @@ pub fn longterm() {
     let mut version = String::new();
     read_cfg_file("xe_config", "Longterm", &mut version);
 
+    // Get build version
+    let build_ver = get_build_ver(now);
+
     // Just print it on terminal
     println!(
-        "{}.{} {}-{}-{}",
+        "{}.{} {}-{}-{} build:{}",
         version,
         diff.num_days(),
         local.year(),
         local.month(),
-        local.day()
+        local.day(),
+        build_ver
     );
 
     // Save version file
@@ -40,6 +45,8 @@ pub fn longterm() {
         + &local.month().to_string()
         + "-"
         + &local.day().to_string()
+        + " build:"
+        + &build_ver.to_string()
         + "\n";
     save_release(version, patch_ver);
 }
@@ -61,14 +68,18 @@ pub fn stable() {
     let mut version = String::new();
     read_cfg_file("xe_config", "Stable", &mut version);
 
+    // Get build version
+    let build_ver = get_build_ver(now);
+
     // Just print it on terminal
     println!(
-        "{}.{} {}-{}-{}",
+        "{}.{} {}-{}-{} build:{}",
         version,
         diff.num_days(),
         local.year(),
         local.month(),
-        local.day()
+        local.day(),
+        build_ver
     );
 
     // Save version file
@@ -79,6 +90,8 @@ pub fn stable() {
         + &local.month().to_string()
         + "-"
         + &local.day().to_string()
+        + " build:"
+        + &build_ver.to_string()
         + "\n";
     save_release(version, patch_ver);
 }
@@ -100,14 +113,18 @@ pub fn develop() {
     let mut version = String::new();
     read_cfg_file("xe_config", "Develop", &mut version);
 
+    // Get build version
+    let build_ver = get_build_ver(now);
+
     // Just print it on terminal
     println!(
-        "{}.{} {}-{}-{}",
+        "{}.{} {}-{}-{} build:{}",
         version,
         diff.num_days(),
         local.year(),
         local.month(),
-        local.day()
+        local.day(),
+        build_ver
     );
 
     // Save version file
@@ -118,6 +135,8 @@ pub fn develop() {
         + &local.month().to_string()
         + "-"
         + &local.day().to_string()
+        + " build:"
+        + &build_ver.to_string()
         + "\n";
     save_release(version, patch_ver);
 }
@@ -157,9 +176,10 @@ pub fn config() {
 fn save_release(ver: String, patch: String) {
     // Get the file name to open
     let ver_str = &ver[0..1];
-    println!("{}", ver_str);
+    // println!("{}", ver_str);
     let save_file_name = "xe-".to_string() + ver_str + ".x";
-    println!("{}", save_file_name);
+    let filename_bak = save_file_name.clone();
+    // println!("{}", save_file_name);
     let filename1 = save_file_name.clone();
 
     // Open the file to save
@@ -175,7 +195,7 @@ fn save_release(ver: String, patch: String) {
     // Save the content
     let full_version = ver + "." + &patch;
     match file.write_all(full_version.as_bytes()) {
-        Ok(_) => println!("Release file saved!"),
+        Ok(_) => println!("Release file saved! to {}", filename_bak),
         Err(_) => println!("Release file save failed!"),
     }
 }
